@@ -1,0 +1,9 @@
+langchain
+langchain-ollama
+langgraph
+pandas
+langchain-core
+langchain-community
+numpy 
+matplotlib
+scipy

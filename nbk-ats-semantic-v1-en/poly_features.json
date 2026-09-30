@@ -1,0 +1,10 @@
+{
+  "model_type": "PolynomialFeatures",
+  "degree": 3,
+  "interaction_only": false,
+  "include_bias": true,
+  "order": "C",
+  "n_features_in": 1,
+  "n_output_features": 4,
+  "sklearn_version": "unknown"
+}

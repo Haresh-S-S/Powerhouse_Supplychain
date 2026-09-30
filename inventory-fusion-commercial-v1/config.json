@@ -1,0 +1,30 @@
+{
+  "architectures": ["AdaptiveInventoryFusion"],
+  "model_type": "inventory-fusion",
+  "library_name": "inventory-fusion",
+  "schema_version": 1,
+  "quantiles": [0.1, 0.5, 0.9],
+  "base_models": {
+    "ttm_r2_1_daily": {
+      "model_id": "ibm-granite/granite-timeseries-ttm-r2",
+      "revision": "caa1eb3d16f053859d81952a1f387d6aeb670076"
+    },
+    "chronos_2": {
+      "model_id": "amazon/chronos-2",
+      "revision": "29ec3766d36d6f73f0696f85560a422f50e8498c"
+    },
+    "timesfm_2_5": {
+      "model_id": "google/timesfm-2.5-200m-pytorch",
+      "revision": "1d952420fba87f3c6dee4f240de0f1a0fbc790e3"
+    }
+  },
+  "fusion": {
+    "algorithm": "hierarchical_exponential_weighting",
+    "temperature": 7.0,
+    "sku_shrinkage": 4.0,
+    "segment_shrinkage": 8.0,
+    "max_weight": 0.88,
+    "state_file": "evaluation/fusion_state.json"
+  },
+  "commercial_license_gate": true
+}

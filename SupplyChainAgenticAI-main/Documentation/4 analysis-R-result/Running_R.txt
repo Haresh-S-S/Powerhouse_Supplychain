@@ -1,0 +1,85 @@
+R version 4.6.0 (2026-04-24 ucrt) -- "Because it was There"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> setwd("~/GitHub/SupplyChainAgenticAI/simulation")
+
+> library(ggplot2)
+> # 1. Load the processed AnyLogic data from the Python output folder
+> df <- read.csv("analysis-python-result/combined_simulation_results.csv")
+> metrics <- read.csv("analysis-python-result/recovery_metrics.csv")
+> # ── Plot 1: Recovery comparison ───────────────────────────────────────────────
+> # Plots the exact impact of your two disruption scenarios
+> ggplot(metrics, aes(x = severity * 100, y = days_critical)) +
++   geom_point(size = 4, color = "steelblue") +
++   geom_line(color = "steelblue", linewidth = 1) +
++   labs(
++     title = "Impact of Disruption Severity on Supply Chain Recovery",
++     subtitle = "Food supply chain simulation — CARES project context",
++     x = "Disruption Severity (%)",
++     y = "Days Below Critical Stock Level",
++     caption = "Simulated AnyLogic data. Recovery triggered at day 45."
++   ) +
++   theme_minimal() +
++   theme(plot.title = element_text(face = "bold"))
+> # Save the plot back into the results folder
+> ggsave("analysis-python-result/recovery_analysis_R.png", width = 8, height = 6, dpi = 150)
+> # ── Statistical summary ───────────────────────────────────────────────────────
+> cat("\n=== R STATISTICAL SUMMARY ===\n")
+
+=== R STATISTICAL SUMMARY ===
+> cat("Recovery metrics:\n")
+Recovery metrics:
+> print(summary(metrics))
+    severity      min_stock     days_critical
+ Min.   :0.20   Min.   : 0.00   Min.   :300  
+ 1st Qu.:0.35   1st Qu.: 5.25   1st Qu.:325  
+ Median :0.50   Median :10.50   Median :350  
+ Mean   :0.50   Mean   :10.50   Mean   :350  
+ 3rd Qu.:0.65   3rd Qu.:15.75   3rd Qu.:375  
+ Max.   :0.80   Max.   :21.00   Max.   :400  
+> # Linear model (Note: With only 2 data points, this shows a mathematical certainty, 
+> # but proves you know how to write the regression model for the PhD application).
+> model <- lm(days_critical ~ severity, data = metrics)
+> cat("\nLinear model (days_critical ~ severity):\n")
+
+Linear model (days_critical ~ severity):
+> print(summary(model))
+
+Call:
+lm(formula = days_critical ~ severity, data = metrics)
+
+Residuals:
+ALL 2 residuals are 0: no residual degrees of freedom!
+
+Coefficients:
+            Estimate Std. Error t value Pr(>|t|)
+(Intercept)    266.7        NaN     NaN      NaN
+severity       166.7        NaN     NaN      NaN
+
+Residual standard error: NaN on 0 degrees of freedom
+Multiple R-squared:      1,	Adjusted R-squared:    NaN 
+F-statistic:   NaN on 1 and 0 DF,  p-value: NA
+
+> cat("\nR² =", round(summary(model)$r.squared, 4), "\n")
+
+R² = 1 
+> cat("Interpretation: Disruption severity explains", 
++     round(summary(model)$r.squared * 100, 1), 
++     "% of variance in recovery time\n")
+Interpretation: Disruption severity explains 100 % of variance in recovery time
+> 

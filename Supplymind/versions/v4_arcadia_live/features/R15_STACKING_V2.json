@@ -1,0 +1,68 @@
+{
+  "n_train": 48000,
+  "n_test": 12000,
+  "n_features": 24,
+  "n_folds": 5,
+  "base_learners": [
+    {
+      "name": "xgboost",
+      "auc": 0.9799,
+      "f1": 0.972,
+      "train_time_s": 3.29,
+      "n_params": 0
+    },
+    {
+      "name": "lightgbm",
+      "auc": 0.9818,
+      "f1": 0.9724,
+      "train_time_s": 7.25,
+      "n_params": 0
+    },
+    {
+      "name": "catboost",
+      "auc": 0.9757,
+      "f1": 0.972,
+      "train_time_s": 15.07,
+      "n_params": 0
+    },
+    {
+      "name": "random_forest",
+      "auc": 0.9753,
+      "f1": 0.972,
+      "train_time_s": 7.72,
+      "n_params": 0
+    },
+    {
+      "name": "logistic_regression",
+      "auc": 0.9725,
+      "f1": 0.972,
+      "train_time_s": 0.7,
+      "n_params": 0
+    },
+    {
+      "name": "mlp",
+      "auc": 0.9722,
+      "f1": 0.9717,
+      "train_time_s": 13.92,
+      "n_params": 0
+    }
+  ],
+  "ensemble_wv_v1": {
+    "name": "ensemble_wv_v1",
+    "auc": 0.9771,
+    "f1": 0.972,
+    "train_time_s": 0.0,
+    "n_params": 0
+  },
+  "stacking_v2": {
+    "name": "stacking_v2",
+    "auc": 0.9816,
+    "f1": 0.9726,
+    "train_time_s": 0.08,
+    "n_params": 0
+  },
+  "best_single": "lightgbm",
+  "best_single_auc": 0.9818,
+  "lift_stacking_vs_best_single_auc": -0.0002,
+  "lift_stacking_vs_wv_auc": 0.0045
+}

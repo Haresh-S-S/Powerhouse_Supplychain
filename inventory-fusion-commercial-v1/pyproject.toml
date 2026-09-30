@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "inventory-fusion"
+version = "0.1.0"
+description = "Commercial-friendly adaptive ensemble forecasting and inventory optimization"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "matplotlib>=3.10",
+  "numpy>=2.2",
+  "pandas>=2.2",
+]
+
+[project.optional-dependencies]
+optimize = ["ortools>=9.12"]
+chronos = [
+  "accelerate>=1.5",
+  "chronos-forecasting==2.3.1",
+  "peft>=0.17",
+]
+ttm = ["granite-tsfm==0.3.8"]
+timesfm = ["timesfm[torch]==2.0.2"]
+all-models = [
+  "accelerate>=1.5",
+  "chronos-forecasting==2.3.1",
+  "granite-tsfm==0.3.8",
+  "peft>=0.17",
+  "timesfm[torch]==2.0.2",
+]
+dev = ["pytest>=8.3", "ruff>=0.11"]
+
+[project.scripts]
+inventory-fusion = "inventory_fusion.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/inventory_fusion"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"configs/model_registry.json" = "inventory_fusion/model_registry.json"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

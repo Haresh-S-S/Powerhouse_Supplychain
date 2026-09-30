@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "models": {
+    "ttm_r2_1_daily": {
+      "model_id": "ibm-granite/granite-timeseries-ttm-r2",
+      "revision": "caa1eb3d16f053859d81952a1f387d6aeb670076",
+      "license": "apache-2.0",
+      "commercial_allowed": true,
+      "role": "R2.1 daily 512-context 48-horizon point forecaster"
+    },
+    "chronos_2": {
+      "model_id": "amazon/chronos-2",
+      "revision": "29ec3766d36d6f73f0696f85560a422f50e8498c",
+      "license": "apache-2.0",
+      "commercial_allowed": true,
+      "role": "covariate-aware probabilistic forecaster"
+    },
+    "timesfm_2_5": {
+      "model_id": "google/timesfm-2.5-200m-pytorch",
+      "revision": "1d952420fba87f3c6dee4f240de0f1a0fbc790e3",
+      "license": "apache-2.0",
+      "commercial_allowed": true,
+      "role": "long-context point and quantile challenger"
+    },
+    "moirai_2": {
+      "model_id": "Salesforce/moirai-2.0-R-small",
+      "revision": "30f43ff08c8494f4943ae1521e9d4e94a0fbb389",
+      "license": "cc-by-nc-4.0",
+      "commercial_allowed": false,
+      "role": "blocked by commercial license gate"
+    }
+  }
+}

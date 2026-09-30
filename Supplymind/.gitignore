@@ -1,0 +1,108 @@
+# Python
+*.egg-info/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Tooling state
+.claude/
+.agents/
+.source_cache/
+.tmp_pytest/
+.pytest_cache/
+wandb/
+
+# Stray pip version artifacts
+0.*/
+1.*/
+4.*/
+
+# Large data files (download instructions in README)
+rl/data/dataco.csv
+rl/data/dataco_access_logs.csv
+rl/data/dataco_description.csv
+rl/data/ibtracs_wp.csv
+rl/data/usgs_m55_30days.csv
+rl/data/archive_simulated/
+rl/data/offline_buffer*.npz
+rl/data/real_buffer.npz
+rl/data/real_train.npz
+rl/data/real_val.npz
+rl/data/real_test.npz
+
+# Trained model checkpoints (too large for git, regeneratable)
+rl/checkpoints/*.pt
+rl/checkpoints/*.zip
+rl/checkpoints/*.pkl
+rl/checkpoints/*.onnx
+rl/checkpoints/*.onnx.data
+rl/checkpoints/lora/
+
+# Logs
+*.log
+
+# Build artifacts
+build/
+dist/
+*.dll
+
+# AutoResearch results (regeneratable)
+rl/autoresearch_results/
+
+# Backup files
+*.bak
+models/
+sota-bundle/
+external_data/
+catboost_info/
+versions/v3_arcadia/tools/
+versions/v3_arcadia/gguf_out/
+
+# Auto-generated embedding caches + SB3 best/ dirs
+versions/v3_arcadia/checkpoints/granite/corpus_emb_*.npy
+versions/v3_arcadia/checkpoints/gethsemane/best_*/
+
+# Third-party source checkouts (not our code) — vendored under vendor/
+vendor/
+
+# Phoenix v5 auto-generated state (keep source code, exclude heavy + auto-gen)
+versions/v5_phoenix/.venv-roll/
+versions/v5_phoenix/.venv/
+versions/v5_phoenix/experiments/dpo_judge_v1/checkpoints/
+versions/v5_phoenix/experiments/dpo_judge_v1/adapter/
+versions/v5_phoenix/roll_integration/dpo_judge/adapter/
+versions/v5_phoenix/**/__pycache__/
+versions/v5_phoenix/**/*.pyc
+versions/v5_phoenix/**/*.log
+versions/v5_phoenix/receipts_v2/*.stdout
+
+# v4 arcadia-live auto-generated state
+versions/v4_arcadia_live/realtime/events.db
+versions/v4_arcadia_live/realtime/events.db-journal
+versions/v4_arcadia_live/realtime/library_embeddings.pkl
+versions/v4_arcadia_live/realtime/vessel_snapshot_hormuz.json
+versions/v4_arcadia_live/autoresearch/experiments/
+versions/v4_arcadia_live/autoresearch/stop_autoresearch.flag
+versions/v4_arcadia_live/autoresearch/candidate_train.py.bak
+# Lab notebook, rejected log, and state.json ARE committed — they document
+# real autoresearch execution history (provenance for judges).
+
+# OpenRouter usage audit log (per-call timestamps, no keys)
+.openrouter_usage.jsonl
+# Frontier panel run intermediate caches
+.openrouter_cache/
+lora_stdout.log
+
+# Pass 8 — large harvest data (regenerable via train.py harvest_trajectories)
+versions/v5_phoenix/experiments/rap_xc_v1/transitions.npz
+versions/v5_phoenix/experiments/rap_xc_v1/transitions_synth.npz
+versions/v5_phoenix/experiments/rap_xc_v1/smoke*.npz
+versions/v5_phoenix/experiments/rap_xc_v1/rapxc_synth.pt
+versions/v5_phoenix/experiments/rap_xc_v1/*.log
+tests/receipts/*.log

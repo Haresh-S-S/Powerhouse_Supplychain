@@ -1,0 +1,15 @@
+{
+  "model_type": "Ridge",
+  "alpha": 0.2,
+  "fit_intercept": true,
+  "coefficients": [
+    0.0,
+    12.2733793258667,
+    159.4762725830078,
+    -90.50666046142578
+  ],
+  "intercept": 17.6917724609375,
+  "n_features_in": 4,
+  "solver": "saga",
+  "sklearn_version": "unknown"
+}

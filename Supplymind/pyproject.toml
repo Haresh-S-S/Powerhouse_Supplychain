@@ -1,0 +1,82 @@
+[project]
+name = "supplymind"
+version = "1.0.0"
+description = "Supply chain risk management OpenEnv environment"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+authors = [
+    {name = "SupplyMind Team"}
+]
+keywords = ["openenv", "supply-chain", "risk-management", "reinforcement-learning", "ai-agents"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0.0",
+    "networkx>=3.2",
+    "numpy>=1.24.0",
+    "httpx>=0.25.0",
+    "openai>=1.0.0",
+    "openenv-core>=0.2.3",
+    # Security pins (transitive advisory chain): bump to the first patched
+    # version of each, otherwise uv.lock pulls in the vulnerable line.
+    "authlib>=1.6.12",
+    "cryptography>=48.0.1",
+    "python-multipart>=0.0.31",
+    "urllib3>=2.7.0",
+]
+
+[project.scripts]
+server = "server.app:main"
+
+[project.optional-dependencies]
+baseline = [
+    "openai>=1.0.0",
+]
+dev = [
+    "pytest>=9.0.3",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.25.0",
+]
+rl = [
+    "torch>=2.1.0",
+    "gymnasium==0.29.1",
+    "stable-baselines3==2.9.0",
+    "sb3-contrib==2.9.0",
+    "d3rlpy==2.8.1",
+    "transformers>=4.36.0",
+    "scipy>=1.11.0",
+    # Forecasting module imports `pytorch_lightning`. Pinning >=2.4.0 closes
+    # the path-traversal advisory chain; the residual DoS advisories have no
+    # patched version published yet (tracked, dismissed as "no fix yet").
+    "pytorch-lightning>=2.4.0",
+    "fredapi>=0.5.0",
+    "shap>=0.43.0",
+    "mlflow>=2.10.0",
+    "wandb>=0.16.0",
+]
+dashboard = [
+    "streamlit>=1.32.0",
+    "plotly>=5.18.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = ["--import-mode=importlib"]
+
+[tool.setuptools.packages.find]
+include = ["server*", "models*", "client*", "baseline*", "rl*", "dashboard*", "benchmark*"]
+exclude = ["tests*"]

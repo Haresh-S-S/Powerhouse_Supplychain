@@ -1,0 +1,1474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SupplyMind · Hormuz War Room</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #07090f;
+    --bg-1: #0c1018;
+    --bg-2: #131826;
+    --bg-3: #1a2030;
+    --bd:   #232a3d;
+    --fg-0: #e8edf6;
+    --fg-1: #aab3c5;
+    --fg-2: #6c7689;
+    --cyan: #22d3ee;
+    --amber:#fbbf24;
+    --zinc: #71717a;
+    --red:  #f87171;
+    --green:#34d399;
+    --violet:#a78bfa;
+  }
+  html, body { background: var(--bg-0); color: var(--fg-0);
+               font-family: 'Inter', system-ui, sans-serif;
+               font-feature-settings: "tnum" on, "ss01" on; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .panel { background: var(--bg-1); border: 1px solid var(--bd);
+           border-radius: 14px; }
+  .chip-live { color: var(--cyan); border-color: rgba(34,211,238,.4);
+               background: rgba(34,211,238,.08); }
+  .chip-model{ color: var(--amber); border-color: rgba(251,191,36,.4);
+               background: rgba(251,191,36,.08); }
+  .chip-scen { color: var(--zinc); border-color: rgba(113,113,122,.4);
+               background: rgba(113,113,122,.10); }
+  .chip-crit { color: var(--red); border-color: rgba(248,113,113,.4);
+               background: rgba(248,113,113,.10); }
+  .chip-good { color: var(--green); border-color: rgba(52,211,153,.4);
+               background: rgba(52,211,153,.10); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 9px; border-radius: 999px;
+    border: 1px solid var(--bd);
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+  .grid-shell { display: grid; gap: 16px;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto; }
+  @media (max-width: 1100px) {
+    .grid-shell { grid-template-columns: 1fr; }
+  }
+  /* SVG map flow lines */
+  .flow { stroke-dasharray: 4 6; animation: flow 2.4s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -200; } }
+  .pulse-ring {
+    transform-origin: center; animation: pulse 1.6s ease-out infinite;
+  }
+  @keyframes pulse {
+    0% { r: 14; opacity: .9; }
+    100%{ r: 36; opacity: 0; }
+  }
+  .stage-pill { transition: all .25s ease; }
+  .stage-pill.done { background: rgba(52,211,153,.10); color: var(--green);
+                     border-color: rgba(52,211,153,.4); }
+  .stage-pill.run  { background: rgba(34,211,238,.10); color: var(--cyan);
+                     border-color: rgba(34,211,238,.4);
+                     animation: blink 1.2s ease-in-out infinite; }
+  @keyframes blink { 50% { opacity: .55; } }
+  table.dense th, table.dense td {
+    border-bottom: 1px solid var(--bd); padding: 8px 10px; text-align: left;
+    vertical-align: middle;
+  }
+  table.dense thead th {
+    text-transform: uppercase; font-size: 10px; letter-spacing: .08em;
+    color: var(--fg-2); font-weight: 600; background: var(--bg-2);
+    position: sticky; top: 0;
+  }
+  table.dense tr:hover td { background: rgba(34,211,238,.04); }
+  .bar-track { background: var(--bg-3); height: 6px; border-radius: 999px;
+               width: 100%; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px;
+              background: linear-gradient(90deg, var(--cyan), var(--violet)); }
+  .receipt-blob { font-family: 'JetBrains Mono', monospace; font-size: 11px;
+                  line-height: 1.5; word-break: break-all; }
+  .scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+  .scrollbar::-webkit-scrollbar-thumb { background: var(--bd); border-radius: 4px; }
+  details > summary { list-style: none; cursor: pointer; }
+  details > summary::-webkit-details-marker { display: none; }
+  .flash { animation: flash 1.6s ease; }
+  @keyframes flash { 0% { background: rgba(34,211,238,.18); } 100% { background: transparent; } }
+
+  /* ============================ TOOLTIP SYSTEM ============================ */
+  /* Hover any element with .help → small popover explains the jargon in plain words. */
+  .help { position: relative; cursor: help; border-bottom: 1px dotted var(--fg-2); }
+  .help::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 130%; left: 0;
+    transform: translateX(0);
+    background: #0c1018; color: #e8edf6;
+    border: 1px solid var(--cyan); border-radius: 8px;
+    padding: 10px 12px; width: 320px; max-width: 90vw;
+    font-size: 11px; font-weight: 400; line-height: 1.45;
+    text-transform: none; letter-spacing: 0;
+    box-shadow: 0 8px 24px rgba(0,0,0,.55);
+    opacity: 0; pointer-events: none; transition: opacity .18s ease;
+    z-index: 99;
+    white-space: pre-wrap;
+  }
+  .help:hover::after { opacity: 1; }
+  .scenario-btn {
+    padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--bd); background: var(--bg-2); color: var(--fg-1);
+    cursor: pointer; transition: all .15s ease;
+  }
+  .scenario-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+  .scenario-btn.active {
+    border-color: var(--cyan); background: rgba(34,211,238,.12);
+    color: var(--cyan);
+  }
+  .ril-row { background: rgba(167,139,250,.04); }
+  .ril-row:hover td { background: rgba(167,139,250,.10) !important; }
+  .map-legend {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    padding: 10px 14px; margin-top: 8px;
+    background: var(--bg-2); border: 1px solid var(--bd); border-radius: 10px;
+    font-size: 11px;
+  }
+  .map-legend-item { display: flex; align-items: center; gap: 6px; }
+  .map-legend-dot {
+    width: 12px; height: 12px; border-radius: 999px;
+    border: 2px solid var(--bg-0);
+  }
+  .action-card {
+    padding: 14px; border-radius: 10px;
+    border: 1px solid var(--bd); background: var(--bg-2);
+    transition: all .15s ease;
+  }
+  .action-card:hover { border-color: var(--cyan); }
+  .action-card .why-it-matters {
+    margin-top: 10px; padding: 10px;
+    background: rgba(52,211,153,.06); border: 1px solid rgba(52,211,153,.3);
+    border-radius: 8px; font-size: 12px; color: var(--fg-1);
+    line-height: 1.5;
+  }
+  .source-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px; border-radius: 999px; border: 1px solid var(--bd);
+    font-size: 11px; color: var(--fg-1);
+    text-decoration: none; transition: all .15s ease;
+  }
+  .source-pill:hover { border-color: var(--cyan); color: var(--cyan); }
+  .ag-card {
+    padding: 14px 16px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(167,139,250,.08), rgba(34,211,238,.06));
+    border: 1px solid rgba(167,139,250,.4);
+  }
+
+  /* Receipt drawer tabs */
+  .drawer-tabs {
+    display: flex; gap: 4px; padding: 0 16px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--bd); background: var(--bg-2);
+  }
+  .drawer-tab {
+    padding: 10px 12px; font-size: 11px; font-weight: 600;
+    color: var(--fg-2); cursor: pointer; border: none; background: transparent;
+    text-transform: uppercase; letter-spacing: .04em;
+    border-bottom: 2px solid transparent;
+    transition: all .15s ease;
+  }
+  .drawer-tab:hover { color: var(--fg-0); }
+  .drawer-tab.active {
+    color: var(--cyan); border-bottom-color: var(--cyan);
+  }
+  .drawer-tab .badge {
+    margin-left: 4px; padding: 1px 6px; border-radius: 999px;
+    background: var(--bg-3); font-size: 10px;
+  }
+  .drawer-pane { display: none; padding: 16px; }
+  .drawer-pane.active { display: block; }
+  .drawer-pane h3 {
+    font-size: 13px; font-weight: 600; margin-bottom: 8px;
+    color: var(--cyan); text-transform: uppercase; letter-spacing: .04em;
+  }
+  .drawer-pane .row {
+    padding: 8px 12px; border: 1px solid var(--bd);
+    background: var(--bg-2); border-radius: 8px;
+    margin-bottom: 6px; font-size: 12px;
+  }
+  .drawer-pane .row strong { color: var(--cyan); }
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ============================ TOP BAR ============================ -->
+<header class="sticky top-0 z-40 border-b border-[var(--bd)] backdrop-blur"
+        style="background: rgba(7,9,15,.85);">
+  <div class="max-w-[1500px] mx-auto px-6 py-4 flex flex-col gap-3
+              md:flex-row md:items-center md:justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl flex items-center justify-center"
+           style="background: linear-gradient(135deg, var(--cyan), var(--violet));">
+        <span class="font-bold text-lg text-[var(--bg-0)]">SM</span>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold leading-tight">
+          SupplyMind <span class="text-[var(--fg-2)]">·</span>
+          <span class="text-[var(--cyan)]">Hormuz War Room</span>
+        </h1>
+        <div class="text-xs text-[var(--fg-2)] mono">
+          v01 · live data · sha256-receipted ·
+          <span id="utc-clock"></span>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="chip chip-live"><span class="w-1.5 h-1.5 rounded-full bg-[var(--cyan)]"></span> live fact</span>
+      <span class="chip chip-model"><span class="w-1.5 h-1.5 rounded-full bg-[var(--amber)]"></span> model estimate</span>
+      <span class="chip chip-scen"><span class="w-1.5 h-1.5 rounded-full bg-[var(--zinc)]"></span> scenario assumption</span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-[1500px] mx-auto px-6 py-6 space-y-6">
+
+  <!-- ============================ SCENARIO INPUT ============================ -->
+  <section class="panel p-5">
+
+    <!-- Pre-loaded scenario templates -->
+    <div class="mb-4 flex flex-wrap items-center gap-2">
+      <span class="text-xs font-semibold uppercase tracking-wider text-[var(--fg-2)] mr-2">Templates:</span>
+      <button class="scenario-btn" data-template="reliance_war">🏭 Reliance · Israel-Iran-USA war (full supply chain)</button>
+      <button class="scenario-btn active" data-template="hormuz_generic">🌊 Hormuz generic closure</button>
+      <button class="scenario-btn" data-template="houthi_red_sea">🚢 Houthi Red Sea persistence</button>
+      <button class="scenario-btn" data-template="iran_strait_threat">⚠️ Iran-only strait-mining threat</button>
+    </div>
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="flex-1">
+        <label class="text-xs font-semibold uppercase tracking-wider text-[var(--fg-2)]">
+          Scenario
+        </label>
+        <textarea id="scenario-text" rows="2" class="mt-2 w-full bg-[var(--bg-2)]
+                  border border-[var(--bd)] rounded-lg px-3 py-2 text-sm
+                  focus:outline-none focus:ring-1 focus:ring-[var(--cyan)]
+                  placeholder-[var(--fg-2)]">If Iran-Israel-US escalation restricts the Strait of Hormuz, what breaks first for India and the Gulf?</textarea>
+      </div>
+      <div class="grid grid-cols-3 md:flex md:items-end gap-3">
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wider text-[var(--fg-2)] help"
+                 data-tip="SEVERITY (0 to 1) — how badly the chokepoint event hits flow.&#10;&#10;0.0 = nothing happens (normal day)&#10;0.3 = minor incident (insurance premium up but ships still pass)&#10;0.6 = partial closure (ships rerouting, ~30% transit cut)&#10;0.85 = serious closure (most ships avoid; emergency rerouting)&#10;1.0 = full closure (no transit possible, military action)">Severity</label>
+          <input id="severity" type="number" step="0.05" min="0" max="1" value="0.85"
+                 class="mt-1 w-24 mono bg-[var(--bg-2)] border border-[var(--bd)]
+                        rounded-lg px-3 py-2 text-sm focus:outline-none
+                        focus:ring-1 focus:ring-[var(--cyan)]">
+        </div>
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wider text-[var(--fg-2)] help"
+                 data-tip="BRENT $/BBL — assumed Brent crude oil price during the disruption.&#10;&#10;Brent is the global benchmark crude price. Today it sits around $80.&#10;During Hormuz events, Brent typically jumps:&#10;• Threats: +$10-15&#10;• Partial closure: +$30-50&#10;• Full closure: +$60-100&#10;&#10;Higher Brent → bigger price-shock channel into sector models.">Brent $/bbl</label>
+          <input id="brent" type="number" step="1" min="20" max="300" value="132"
+                 class="mt-1 w-24 mono bg-[var(--bg-2)] border border-[var(--bd)]
+                        rounded-lg px-3 py-2 text-sm focus:outline-none
+                        focus:ring-1 focus:ring-[var(--cyan)]">
+        </div>
+        <div>
+          <label class="text-xs font-semibold uppercase tracking-wider text-[var(--fg-2)] help"
+                 data-tip="DURATION DAYS — how long the disruption is expected to last.&#10;&#10;7 days = transient incident (weekend tanker scare)&#10;21 days = serious crisis (similar to past Hormuz threats)&#10;60 days = persistent campaign (Houthi Red Sea analog)&#10;180+ days = structural war state&#10;&#10;Longer duration drains buffers and worsens cascading impact.">Duration days</label>
+          <input id="duration" type="number" step="1" min="1" max="180" value="21"
+                 class="mt-1 w-24 mono bg-[var(--bg-2)] border border-[var(--bd)]
+                        rounded-lg px-3 py-2 text-sm focus:outline-none
+                        focus:ring-1 focus:ring-[var(--cyan)]">
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold uppercase tracking-wider text-[var(--fg-2)] help"
+                 data-tip="OPENROUTER FRONTIER PANEL — checks our verdict against independent frontier LLMs.&#10;&#10;6-judge: GPT-OSS-120B, Gemma-4-31B, GLM-4.5, MiniMax-M2.5, Nemotron-3-Super-120B, Gemma-4-26B.&#10;12-judge (expand): adds DeepSeek-V3.5, Qwen-3-235B, Llama-4-405B, Mistral-Large-3, Grok-4-mini, Claude-Haiku-4.5.&#10;&#10;Returns Krippendorff α agreement coefficient. Higher α = panels agree, more confidence.">OpenRouter</label>
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input id="enable-openrouter" type="checkbox" class="w-4 h-4 accent-[var(--cyan)]">
+            <span class="text-xs text-[var(--fg-1)]">6-judge panel<br>(+~60s, free)</span>
+          </label>
+          <label class="inline-flex items-center gap-2 cursor-pointer mt-1">
+            <input id="expand-12-judges" type="checkbox" class="w-4 h-4 accent-[var(--violet)]">
+            <span class="text-xs text-[var(--fg-1)]">12-judge expand<br>(+~120s)</span>
+          </label>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-semibold uppercase tracking-wider text-[var(--fg-2)] help"
+                 data-tip="Toggles the Reliance Industries 10-node subsidiary impact table — Jamnagar refinery, RIL Petrochem, KG-D6 E&P, Reliance Retail, Jio Platforms, Recron polyester, RIIL pipelines, Reliance General Insurance, Reliance Power, Network18.">Reliance</label>
+          <label class="inline-flex items-center gap-2 cursor-pointer">
+            <input id="enable-reliance" type="checkbox" class="w-4 h-4 accent-[var(--violet)]">
+            <span class="text-xs text-[var(--fg-1)]">10-subsidiary<br>RIL table</span>
+          </label>
+        </div>
+        <button id="run-btn" class="md:ml-2 mt-1 px-5 py-2 rounded-lg font-semibold
+                  text-[var(--bg-0)] transition active:scale-[.98]"
+                style="background: linear-gradient(135deg, var(--cyan), var(--violet));">
+          ▶ Run war room
+        </button>
+      </div>
+    </div>
+
+    <!-- Stage progress -->
+    <div id="stages" class="mt-5 flex flex-wrap items-center gap-2">
+      <span class="stage-pill chip" data-stage="signals">1 · live signals</span>
+      <span class="stage-pill chip" data-stage="analogs">2 · analog match</span>
+      <span class="stage-pill chip" data-stage="judges">3 · judges</span>
+      <span class="stage-pill chip" data-stage="sectors">4 · sector tables</span>
+      <span class="stage-pill chip" data-stage="cf">5 · counterfactual</span>
+      <span class="stage-pill chip" data-stage="receipt">6 · receipt</span>
+      <span class="ml-auto text-xs mono text-[var(--fg-2)]">
+        elapsed <span id="elapsed">—</span> s
+      </span>
+    </div>
+  </section>
+
+  <!-- ============================ HEADLINE / RISK BAR ============================ -->
+  <section id="headline" class="panel p-5 hidden">
+    <div class="grid md:grid-cols-4 gap-5">
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="RISK LEVEL — overall verdict from the 3-judge panel. LOW (0-0.3) = monitor only. MEDIUM (0.3-0.6) = prepare contingencies. HIGH (0.6-0.85) = activate plans now. CRITICAL (>0.85) = full emergency response.">Risk level</div>
+        <div id="risk-level" class="mt-1 text-3xl font-bold">—</div>
+        <div id="risk-source" class="text-xs text-[var(--fg-2)] mt-1"></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="COMPOSITE CONFIDENCE — how sure we are about this verdict.&#10;&#10;Built from 3 independent signals:&#10;• 55% — agreement among LLM judges&#10;• 25% — sharpness of sector ranking (more spread = sharper signal)&#10;• 20% — corroboration from live signals last 24h&#10;&#10;Plain-uncle: '90% means we are very sure. 50% means we are guessing more than measuring.'">Composite confidence</div>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span id="conf-pct" class="text-3xl font-bold mono text-[var(--cyan)]">—</span>
+          <span class="text-xs text-[var(--fg-2)]">judge·dispersion·signals</span>
+        </div>
+        <div class="bar-track mt-2"><div id="conf-bar" class="bar-fill" style="width:0%"></div></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="BRENT PROJECTION P50 — our best estimate of where crude oil price ends up.&#10;&#10;P50 = the median (50% chance price is below, 50% above).&#10;P10 / P90 give the 80% confidence band (lower / upper bound).&#10;&#10;Plain-uncle: 'If we ran this 100 times, half the time Brent ends up below this number, half above. The p10-p90 band is where we expect 80 out of 100 outcomes.'">Brent projection p50</div>
+        <div id="brent-p50" class="mt-1 text-3xl font-bold mono text-[var(--amber)]">—</div>
+        <div id="brent-band" class="text-xs text-[var(--fg-2)] mt-1 mono"></div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="P50 LOSS SAVING — if the company follows our recommended action plan, this is how much money they save (median estimate) versus doing nothing.&#10;&#10;P50 means: half the time savings will be larger, half smaller. Robust median, not optimistic best case.&#10;&#10;Plain-uncle: 'If we ran this disruption 100 times and they followed our plan, half the time they save more than this number. It is the do-or-don't-act dollar comparison.'">P50 loss saving (with plan)</div>
+        <div id="cf-saved" class="mt-1 text-3xl font-bold mono text-[var(--green)]">—</div>
+        <div id="cf-pct" class="text-xs text-[var(--fg-2)] mt-1 mono"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ MAP + SIGNALS ============================ -->
+  <section class="grid-shell">
+
+    <!-- CHOKEPOINT MAP -->
+    <div class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold help" data-tip="CHOKEPOINT MAP — where the world's oil and LNG flows pinch through narrow waterways.&#10;&#10;Red = chokepoint (Strait of Hormuz). Yellow = producer countries. Cyan = consumer countries (India, China, Japan, Korea). Violet = bypass routes (Habshan-Fujairah, East-West, Cape).&#10;&#10;Click any line to see flow rate + capacity + source.">Chokepoint map · IEA / EIA cited</h2>
+        <span class="chip chip-live">14 nodes · 18 edges</span>
+      </div>
+      <div class="aspect-[16/10] bg-[var(--bg-2)] rounded-xl overflow-hidden border border-[var(--bd)]">
+        <svg id="map-svg" viewBox="0 0 1000 620" class="w-full h-full"></svg>
+      </div>
+      <div class="map-legend">
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#f87171"></span>Chokepoint (Hormuz)</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#fbbf24"></span>Producer (Saudi/UAE/Iraq/Qatar/Iran)</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#22d3ee"></span>Consumer (India/China/Japan/Korea/EU)</div>
+        <div class="map-legend-item"><span class="map-legend-dot" style="background:#a78bfa"></span>Bypass (Fujairah/East-West/Cape)</div>
+        <div class="map-legend-item"><span style="display:inline-block;width:24px;height:2px;background:#22d3ee"></span>Crude flow (mb/d)</div>
+        <div class="map-legend-item"><span style="display:inline-block;width:24px;height:2px;background:#a78bfa"></span>Bypass route</div>
+      </div>
+      <div id="map-edge-info" class="mt-3 text-xs text-[var(--fg-1)] hidden"></div>
+      <div class="mt-3 grid grid-cols-2 md:grid-cols-3 gap-2" id="headline-facts">
+      </div>
+    </div>
+
+    <!-- LIVE SIGNALS + ANALOGS -->
+    <div class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">Live signals + historical analogs</h2>
+        <span id="signals-flag" class="chip chip-scen">awaiting</span>
+      </div>
+      <div id="analogs" class="space-y-2 max-h-[260px] overflow-y-auto scrollbar"></div>
+      <hr class="border-[var(--bd)] my-3">
+      <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] mb-2">3-judge panel</div>
+      <div id="judges" class="space-y-2"></div>
+    </div>
+  </section>
+
+  <!-- ============================ INDIA + GULF TABLES ============================ -->
+  <section class="grid-shell">
+
+    <!-- INDIA TABLE -->
+    <div class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">India · sector impact ranking</h2>
+        <span class="chip chip-model">deterministic · cited</span>
+      </div>
+      <div class="overflow-x-auto scrollbar">
+        <table class="w-full dense text-sm">
+          <thead><tr>
+            <th>#</th><th>Sector</th><th>Score</th>
+            <th>Driver</th><th>1st symptom (d)</th><th>30d ₹ Cr (point)</th>
+          </tr></thead>
+          <tbody id="india-tbody"></tbody>
+        </table>
+      </div>
+      <div class="mt-2 text-xs text-[var(--fg-2)]">
+        Ranked by deterministic 4-channel score: structural dependency · severity · brent shock · duration overrun.
+      </div>
+    </div>
+
+    <!-- GULF TABLE -->
+    <div class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">UAE / Gulf · sector impact ranking</h2>
+        <span class="chip chip-model">deterministic · cited</span>
+      </div>
+      <div class="overflow-x-auto scrollbar">
+        <table class="w-full dense text-sm">
+          <thead><tr>
+            <th>#</th><th>Sector</th><th>Score</th>
+            <th>Bypass</th><th>1st symptom (d)</th><th>30d $M (point)</th>
+          </tr></thead>
+          <tbody id="gulf-tbody"></tbody>
+        </table>
+      </div>
+      <div class="mt-2 text-xs text-[var(--fg-2)]">
+        Score includes a bypass credit when Habshan-Fujairah / East-West / Cape route applies.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ RELIANCE INDUSTRIES (NEW) ============================ -->
+  <section id="reliance-section" class="hidden">
+    <div class="ag-card mb-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <div class="text-xs uppercase tracking-wider text-[var(--violet)] font-semibold">
+            🏭 Reliance Industries · Israel-Iran-USA war scenario
+          </div>
+          <div class="text-lg font-bold mt-1">Full supply-chain impact across 10 RIL subsidiaries</div>
+          <div class="text-xs text-[var(--fg-2)] mt-1">
+            Built from RIL Integrated Annual Report FY24 + DGH + BSE/NSE filings + ICIS market data.
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-4 text-right">
+          <div>
+            <div class="text-xs text-[var(--fg-2)] uppercase tracking-wider help"
+                 data-tip="Sum of point-estimate 30-day revenue-at-risk across all 10 RIL subsidiaries shown below.">30d at-risk · point</div>
+            <div id="ril-at-risk-point" class="text-2xl font-bold mono text-[var(--amber)]">—</div>
+          </div>
+          <div>
+            <div class="text-xs text-[var(--fg-2)] uppercase tracking-wider help"
+                 data-tip="Low-end of the 30-day band (sum of low estimates). Higher number = more conservative outlook.">30d at-risk · band</div>
+            <div id="ril-at-risk-band" class="text-sm font-semibold mono text-[var(--fg-1)]">—</div>
+          </div>
+          <div>
+            <div class="text-xs text-[var(--fg-2)] uppercase tracking-wider help"
+                 data-tip="What % of RIL FY24 total revenue is at risk in this 30-day window. Below 1% = manageable. 1-3% = concerning. Above 3% = serious.">% of FY24 revenue</div>
+            <div id="ril-pct-rev" class="text-2xl font-bold mono text-[var(--violet)]">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">RIL subsidiary impact · 10-node ranking</h2>
+        <span class="chip chip-model">deterministic · FY24-anchored · cited</span>
+      </div>
+      <div class="overflow-x-auto scrollbar">
+        <table class="w-full dense text-sm">
+          <thead><tr>
+            <th>#</th><th>Subsidiary / business unit</th><th>Score</th>
+            <th>Hormuz dep%</th><th>FY24 rev (₹ Cr)</th>
+            <th>1st symptom (d)</th><th>30d ₹ Cr (point)</th>
+          </tr></thead>
+          <tbody id="reliance-tbody"></tbody>
+        </table>
+      </div>
+      <div class="mt-3 text-xs text-[var(--fg-2)]">
+        Point estimate within published band; ranking driven by 4 channels (structural / severity / brent shock / duration overrun) per node.
+        Hover any row name to read the full feedstock chain + first-symptom narrative.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ACTIONS + CAVEATS ============================ -->
+  <section class="grid-shell">
+    <div class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold help"
+            data-tip="RECOMMENDED ACTIONS — concrete, intent-typed plays for management to execute. Each row shows: (a) action verb, (b) target node, (c) cost in USD, (d) loss avoided in USD, (e) reason in plain language.&#10;&#10;Generated by RAP-XC (curriculum + replay BC) ranked over a hierarchical 4-intent action space, then filtered through Vovk-2005 conformal action filter (0.9001 empirical coverage).">Recommended actions · OpenEnv-typed</h2>
+        <span class="chip chip-live">RAP-XC + hierarchical + conformal</span>
+      </div>
+      <div class="text-xs text-[var(--fg-2)] mb-3 leading-relaxed">
+        <strong class="text-[var(--cyan)]">How to read this panel:</strong> each card shows ONE play.
+        The amber number is what it costs to execute. The green number is the loss it prevents.
+        Loss-avoided ≫ cost = profitable play. The reason line tells you in plain words why this action works.
+      </div>
+      <div id="actions" class="space-y-2"></div>
+    </div>
+
+    <div class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">Honest caveats · what we are NOT claiming</h2>
+        <span class="chip chip-scen">no AI fluff</span>
+      </div>
+      <ul id="caveats" class="space-y-2 text-sm text-[var(--fg-1)]"></ul>
+    </div>
+  </section>
+
+  <!-- ============================ 25-JUDGE META PANEL ============================ -->
+  <section class="panel p-5 hidden" id="judge-meta-panel">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-semibold help"
+          data-tip="25-JUDGE META PANEL — multi-tier ensemble: 3 local Ollama + up to 12 frontier OpenRouter + 10 deterministic sector specialists. Per Skalse 2022 anti-game literature: independent specialists with non-overlapping reward functions are harder to game than a single generalist judge.">25-Judge meta panel · multi-tier ensemble</h2>
+      <span id="judge-meta-flag" class="chip chip-live">awaiting</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="Total number of independent judge verdicts collected across local Ollama, frontier OpenRouter, and specialist tiers.">Total judges</div>
+        <div id="judge-meta-total" class="text-xl font-bold mono">—</div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="Median ordinal risk level across the union of all judges (LOW/MEDIUM/HIGH/CRITICAL). Robust to single-judge outliers.">Meta consensus</div>
+        <div id="judge-meta-consensus" class="text-xl font-bold mono">—</div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="Local-Ollama tier consensus (3 judges).">Local Ollama</div>
+        <div id="judge-meta-local" class="text-xl font-bold mono">—</div>
+      </div>
+      <div>
+        <div class="text-xs uppercase tracking-wider text-[var(--fg-2)] help"
+             data-tip="Specialist deterministic tier consensus (10 sector specialists).">Specialists</div>
+        <div id="judge-meta-spec" class="text-xl font-bold mono">—</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="judge-meta-tiers">
+      <!-- 3 source-tier cards rendered here -->
+    </div>
+  </section>
+
+  <!-- ============================ SPECIALIST PANEL ============================ -->
+  <section class="panel p-5 hidden" id="specialist-panel">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="font-semibold help"
+          data-tip="10 deterministic sector-specialist judges. Each has narrow specialty (refining, petchem, LNG, tankers, marine insurance, retail, telecom, fertilizer, aviation, power) and weights the 4 reward channels (structural / severity / brent / duration) per its domain. Independent specialists are harder to game than one generalist judge (Skalse 2022).">10 specialist judges · sector-specific deterministic verdicts</h2>
+      <span id="spec-flag" class="chip chip-good">10 specialists · deterministic</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="specialist-cards"></div>
+  </section>
+
+  <!-- ============================ OPENROUTER PANEL + BACKTEST ============================ -->
+  <section class="grid-shell">
+
+    <!-- OPENROUTER PANEL -->
+    <div id="openrouter-panel" class="panel p-5 hidden">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">OpenRouter · 6-frontier-judge cross-check</h2>
+        <span id="openrouter-flag" class="chip chip-live">awaiting</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+        <div>
+          <div class="text-xs uppercase tracking-wider text-[var(--fg-2)]">Consensus</div>
+          <div id="or-consensus" class="text-xl font-bold mono">—</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wider text-[var(--fg-2)]">Krippendorff α</div>
+          <div id="or-alpha" class="text-xl font-bold mono text-[var(--cyan)]">—</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wider text-[var(--fg-2)]">Mean confidence</div>
+          <div id="or-meanconf" class="text-xl font-bold mono">—</div>
+        </div>
+        <div>
+          <div class="text-xs uppercase tracking-wider text-[var(--fg-2)]">Panel size</div>
+          <div id="or-panelsize" class="text-xl font-bold mono">—</div>
+        </div>
+      </div>
+      <div id="or-judges" class="space-y-2"></div>
+    </div>
+
+    <!-- BACKTEST -->
+    <div id="backtest-panel" class="panel p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="font-semibold">Validation · backtest vs 8 documented events</h2>
+        <button id="run-backtest" class="text-xs chip chip-live cursor-pointer
+                hover:border-[var(--cyan)]">▶ run</button>
+      </div>
+      <div id="backtest-summary" class="text-xs text-[var(--fg-1)] mb-3">
+        Click ▶ run to validate against 8 historical Iran/Israel/Hormuz/Red-Sea
+        events with documented Brent prices, vessel rerouting, and severity.
+        Receipt at <span class="mono">tests/receipts/war_room_validation.json</span>.
+      </div>
+      <div id="backtest-rows" class="space-y-1"></div>
+    </div>
+  </section>
+
+  <!-- ============================ FOOTER / RECEIPT BUTTON ============================ -->
+  <section class="flex items-center justify-between text-xs text-[var(--fg-2)] py-4">
+    <div>
+      Numbers cite published agency data (PPAC, IEA, EIA, ICIS, DGCA, ADNOC, DP World).
+      Live pipeline reuses /live/hormuz-closure. Sector tables are deterministic + replayable.
+    </div>
+    <button id="receipt-btn" class="px-4 py-2 rounded-lg border border-[var(--bd)]
+            bg-[var(--bg-2)] hover:border-[var(--cyan)] transition text-[var(--cyan)] mono">
+      ⊟ open receipt
+    </button>
+  </section>
+</main>
+
+<!-- ============================ RECEIPT DRAWER (TABBED) ============================ -->
+<aside id="drawer" class="fixed right-0 top-0 h-full w-full md:w-[640px]
+       bg-[var(--bg-1)] border-l border-[var(--bd)] transform translate-x-full
+       transition-transform duration-300 z-50 flex flex-col">
+  <div class="p-4 border-b border-[var(--bd)] flex items-center justify-between">
+    <div>
+      <div class="font-semibold">Receipt · sha256-anchored</div>
+      <div class="text-xs text-[var(--fg-2)] mono" id="drawer-sha">—</div>
+    </div>
+    <button id="drawer-close" class="text-[var(--fg-2)] hover:text-[var(--fg-0)]
+            text-xl leading-none">✕</button>
+  </div>
+
+  <!-- Tab navigation -->
+  <div class="drawer-tabs">
+    <button class="drawer-tab active" data-pane="overview">Overview</button>
+    <button class="drawer-tab" data-pane="inputs">Inputs</button>
+    <button class="drawer-tab" data-pane="signals">Signals <span class="badge" id="tab-badge-signals">0</span></button>
+    <button class="drawer-tab" data-pane="judges">Judges <span class="badge" id="tab-badge-judges">0</span></button>
+    <button class="drawer-tab" data-pane="sectors">Sectors</button>
+    <button class="drawer-tab" data-pane="actions">Actions <span class="badge" id="tab-badge-actions">0</span></button>
+    <button class="drawer-tab" data-pane="raw">Raw JSON</button>
+  </div>
+
+  <!-- Tab panes -->
+  <div class="flex-1 overflow-y-auto scrollbar" id="drawer-content">
+    <div class="drawer-pane active" id="pane-overview">
+      <h3>Headline verdict</h3>
+      <div id="pane-overview-body" class="text-xs text-[var(--fg-1)]"></div>
+    </div>
+    <div class="drawer-pane" id="pane-inputs">
+      <h3>Scenario inputs</h3>
+      <div id="pane-inputs-body" class="text-xs text-[var(--fg-1)]"></div>
+    </div>
+    <div class="drawer-pane" id="pane-signals">
+      <h3>Live signals + analogs</h3>
+      <div id="pane-signals-body" class="text-xs text-[var(--fg-1)]"></div>
+    </div>
+    <div class="drawer-pane" id="pane-judges">
+      <h3>All judge verdicts (across tiers)</h3>
+      <div id="pane-judges-body" class="text-xs text-[var(--fg-1)]"></div>
+    </div>
+    <div class="drawer-pane" id="pane-sectors">
+      <h3>India + Gulf + Reliance impact</h3>
+      <div id="pane-sectors-body" class="text-xs text-[var(--fg-1)]"></div>
+    </div>
+    <div class="drawer-pane" id="pane-actions">
+      <h3>Recommended actions</h3>
+      <div id="pane-actions-body" class="text-xs text-[var(--fg-1)]"></div>
+    </div>
+    <div class="drawer-pane" id="pane-raw">
+      <h3>Raw JSON receipt</h3>
+      <pre class="receipt-blob whitespace-pre-wrap" id="pane-raw-body"></pre>
+    </div>
+  </div>
+
+  <div class="p-4 border-t border-[var(--bd)] flex items-center gap-2">
+    <button id="copy-btn" class="px-3 py-1.5 rounded border border-[var(--bd)]
+            text-xs hover:border-[var(--cyan)] hover:text-[var(--cyan)] transition">
+      copy json
+    </button>
+    <a id="dl-btn" download="hormuz-war-room-receipt.json"
+       class="px-3 py-1.5 rounded border border-[var(--bd)]
+              text-xs hover:border-[var(--cyan)] hover:text-[var(--cyan)] transition">
+      download
+    </a>
+    <span class="ml-auto text-[10px] text-[var(--fg-2)] mono">
+      sha computed over canonical JSON (sorted keys)
+    </span>
+  </div>
+</aside>
+
+<!-- ============================ SCRIPT ============================ -->
+<script>
+  // ---------- utility ----------
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+  const fmt = (x, d=2) => (x === null || x === undefined || Number.isNaN(x)) ? "—" : Number(x).toFixed(d);
+  const fmtUSD = (x) => (x === null || x === undefined) ? "—" : "$" + Number(x).toLocaleString();
+  const fmtINR = (x) => (x === null || x === undefined) ? "—" : "₹" + Number(x).toLocaleString() + " Cr";
+  let LAST_RECEIPT = null;
+
+  function tickClock() {
+    const d = new Date(); const z = (n) => String(n).padStart(2,"0");
+    $("#utc-clock").textContent =
+      d.getUTCFullYear()+"-"+z(d.getUTCMonth()+1)+"-"+z(d.getUTCDate())+
+      " "+z(d.getUTCHours())+":"+z(d.getUTCMinutes())+":"+z(d.getUTCSeconds())+"Z";
+  }
+  setInterval(tickClock, 500); tickClock();
+
+  function setStage(name, state) {
+    const el = document.querySelector(`.stage-pill[data-stage="${name}"]`);
+    if (el) { el.classList.remove("done","run");
+              if (state) el.classList.add(state); }
+  }
+  function resetStages() { $$(".stage-pill").forEach(e => e.classList.remove("done","run")); }
+
+  // ---------- chokepoint map render ----------
+  function renderMap(graph) {
+    const svg = $("#map-svg");
+    svg.innerHTML = "";
+    const W = 1000, H = 620;
+    const ns = "http://www.w3.org/2000/svg";
+    const colorByType = {
+      producer:   "#fbbf24",
+      bypass:     "#a78bfa",
+      bypass_node:"#a78bfa",
+      chokepoint: "#f87171",
+      consumer:   "#22d3ee",
+    };
+
+    // Edges first (under nodes)
+    graph.edges.forEach(e => {
+      const a = graph.nodes.find(n => n.id === e.src);
+      const b = graph.nodes.find(n => n.id === e.dst);
+      if (!a || !b) return;
+      const x1 = a.x*W, y1 = a.y*H, x2 = b.x*W, y2 = b.y*H;
+      const line = document.createElementNS(ns, "line");
+      line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+      const flow = e.flow_mbd || 0;
+      const lng  = e.flow_lng_bcfd || 0;
+      const isBypass = (e.kind || "").startsWith("bypass");
+      line.setAttribute("stroke", isBypass ? "#a78bfa" : "#22d3ee");
+      line.setAttribute("stroke-width",
+                          Math.max(1.5, Math.min(7, (flow + lng*0.5))));
+      line.setAttribute("opacity", isBypass ? .6 : .55);
+      line.classList.add("flow");
+      line.style.cursor = "pointer";
+      line.addEventListener("click", () => {
+        const info = $("#map-edge-info");
+        const cap = e.capacity_mbd ? ` · cap ${e.capacity_mbd} mb/d` : "";
+        info.classList.remove("hidden"); info.classList.add("flash");
+        info.innerHTML =
+          `<span class="chip chip-live">edge</span> `+
+          `<span class="mono">${e.src} → ${e.dst}</span>` +
+          ` · ${e.kind} · ${flow ? flow+" mb/d" : ""}${lng ? lng+" Bcf/d LNG" : ""}${cap}`+
+          ` · <span class="text-[var(--fg-2)]">${e.agency || ""}</span>` +
+          (e.note ? `<div class="mt-1 text-[var(--fg-2)]">${e.note}</div>` : "");
+        setTimeout(()=>info.classList.remove("flash"), 1600);
+      });
+      svg.appendChild(line);
+    });
+
+    // Pulse on Hormuz
+    const choke = graph.nodes.find(n => n.type === "chokepoint");
+    if (choke) {
+      const cx = choke.x*W, cy = choke.y*H;
+      for (let i=0;i<2;i++) {
+        const c = document.createElementNS(ns,"circle");
+        c.setAttribute("cx", cx); c.setAttribute("cy", cy);
+        c.setAttribute("r", 14); c.setAttribute("fill", "none");
+        c.setAttribute("stroke", "#f87171"); c.setAttribute("stroke-width", "2");
+        c.setAttribute("style", `animation-delay:${i*0.8}s;`);
+        c.classList.add("pulse-ring");
+        svg.appendChild(c);
+      }
+    }
+
+    // Nodes
+    graph.nodes.forEach(n => {
+      const cx = n.x*W, cy = n.y*H;
+      const c = document.createElementNS(ns, "circle");
+      c.setAttribute("cx", cx); c.setAttribute("cy", cy);
+      c.setAttribute("r", n.type === "chokepoint" ? 10 : 7);
+      c.setAttribute("fill", colorByType[n.type] || "#aab3c5");
+      c.setAttribute("stroke", "#0c1018"); c.setAttribute("stroke-width", "2");
+      svg.appendChild(c);
+      const t = document.createElementNS(ns, "text");
+      t.setAttribute("x", cx + 12); t.setAttribute("y", cy + 4);
+      t.setAttribute("fill", "#e8edf6"); t.setAttribute("font-size", "13");
+      t.setAttribute("font-family", "Inter, system-ui");
+      t.setAttribute("font-weight", n.type === "chokepoint" ? "700" : "500");
+      t.textContent = n.label;
+      svg.appendChild(t);
+    });
+  }
+
+  function renderHeadlineFacts(facts) {
+    const box = $("#headline-facts");
+    box.innerHTML = "";
+    facts.forEach(f => {
+      const div = document.createElement("div");
+      div.className = "p-2 rounded-lg border border-[var(--bd)] bg-[var(--bg-2)]";
+      const val = (f.value !== undefined ? f.value :
+                   `${f.value_low}-${f.value_high}`);
+      div.innerHTML =
+        `<div class="text-xs text-[var(--fg-1)] leading-tight">${f.fact}</div>`+
+        `<div class="mt-1 flex items-center gap-1">`+
+        `  <span class="mono text-[var(--cyan)] text-sm font-semibold">${val} ${f.unit}</span>`+
+        `  <a href="${f.source}" target="_blank" rel="noopener"`+
+        `     class="ml-auto text-[10px] text-[var(--fg-2)] hover:text-[var(--cyan)]">${f.agency} ↗</a>`+
+        `</div>`;
+      box.appendChild(div);
+    });
+  }
+
+  // ---------- analogs + judges + actions ----------
+  function renderAnalogs(analogs, signalsUsed) {
+    const flag = $("#signals-flag");
+    flag.classList.remove("chip-scen","chip-live","chip-good","chip-crit");
+    if (signalsUsed > 0) {
+      flag.classList.add("chip-live");
+      flag.textContent = `${signalsUsed} live signals · 24h`;
+    } else {
+      flag.classList.add("chip-scen");
+      flag.textContent = "no live signals last 24h";
+    }
+    const box = $("#analogs"); box.innerHTML = "";
+    if (!analogs || !analogs.length) {
+      box.innerHTML = '<div class="text-xs text-[var(--fg-2)]">no analog matches</div>';
+      return;
+    }
+    analogs.forEach(a => {
+      const div = document.createElement("div");
+      div.className = "p-3 rounded-lg border border-[var(--bd)] bg-[var(--bg-2)]";
+      div.innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <div class="font-medium text-sm">${a.name}</div>
+          <span class="mono text-xs text-[var(--cyan)]">sim ${fmt(a.similarity,3)}</span>
+        </div>
+        <div class="text-xs text-[var(--fg-2)] mt-1 mono">${a.date} · severity ${fmt(a.severity,2)} · ${a.event_id}</div>
+        <div class="text-xs text-[var(--fg-1)] mt-2">${a.summary || ""}</div>`;
+      box.appendChild(div);
+    });
+  }
+
+  function renderJudges(judges) {
+    const box = $("#judges"); box.innerHTML = "";
+    if (!judges || !judges.length) return;
+    judges.forEach(j => {
+      const div = document.createElement("div");
+      div.className = "p-3 rounded-lg border border-[var(--bd)] bg-[var(--bg-2)]";
+      div.innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <div class="font-medium text-sm">${j.name}</div>
+          <div class="flex items-center gap-2">
+            <span class="chip ${j.risk_level === "CRITICAL" ? "chip-crit" :
+                                  j.risk_level === "HIGH" ? "chip-crit" :
+                                  j.risk_level === "MEDIUM" ? "chip-model" : "chip-good"}">${j.risk_level}</span>
+            <span class="mono text-xs text-[var(--cyan)]">conf ${fmt(j.confidence,2)}</span>
+          </div>
+        </div>
+        <div class="text-xs text-[var(--fg-1)] mt-2">${j.rationale || ""}</div>
+        <div class="mt-1 text-[10px] text-[var(--fg-2)] mono">${j.judge_source || ""} · ${j.latency_s}s</div>`;
+      box.appendChild(div);
+    });
+  }
+
+  // Plain-language explainers mapped per action_type (deterministic, no LLM)
+  const ACTION_EXPLAINERS = {
+    "activate_backup_supplier":
+      "Switch part of the volume to a pre-qualified second-source supplier (typically held on standby contract). Costs more per unit but guarantees flow continuity. Worth it when stockout cost > extra unit cost.",
+    "activate_backup":
+      "Same as activate_backup_supplier — turn on the standby contract.",
+    "reroute_shipment":
+      "Re-direct in-transit cargo via Cape of Good Hope or East-West pipeline instead of Hormuz / Bab-el-Mandeb. Adds 14-22 days transit but bypasses the chokepoint. Each rerouted VLCC saves ~$30M of demurrage and insurance escalation.",
+    "increase_safety_stock":
+      "Build inventory buffer ahead of the disruption peak. Cost is carrying-cost (~25%/year per CSCMP). Saves the cost of stockouts during the disruption window.",
+    "expedite_shipment":
+      "Pay airfreight (~10x sea cost per IATA) for the highest-margin SKUs only. Used surgically — never blanket-applied — because economics break above ~5% of SKU portfolio.",
+    "hedge_commodity":
+      "Buy upside protection on Brent / naphtha / LNG via futures or swaps. Locks in input cost. Pays off when commodity moves against you; expires worthless if it doesn't.",
+    "issue_supplier_alert":
+      "Pre-emptive notification to downstream customers that supply allocation may shift. Manages relationships, prevents surprise contract violations.",
+    "do_nothing":
+      "Decline to act. Sometimes the right call when (a) signal is too weak, (b) action cost > expected loss, or (c) buffers are sufficient for disruption duration.",
+  };
+
+  function renderActions(actions) {
+    const box = $("#actions"); box.innerHTML = "";
+    if (!actions || !actions.length) {
+      box.innerHTML = '<div class="text-xs text-[var(--fg-2)]">no actions</div>';
+      return;
+    }
+    actions.forEach((a, i) => {
+      const div = document.createElement("div");
+      div.className = "action-card";
+      const cost = a.estimated_cost_usd;
+      const save = a.estimated_loss_avoided_usd;
+      const ratio = (cost && save && cost > 0) ? (save / cost).toFixed(1) + "×" : "—";
+      const explainer = ACTION_EXPLAINERS[a.action_type] || "";
+      div.innerHTML = `
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="mono text-[var(--fg-2)] text-xs">${String(i+1).padStart(2,"0")}</span>
+            <span class="font-medium text-sm">${a.action_type}${a.target ? " · "+a.target : ""}</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs mono">
+            ${cost != null ? `<span class="text-[var(--amber)]" title="What it costs to execute this action">cost ${fmtUSD(cost)}</span>` : ""}
+            ${save != null ? `<span class="text-[var(--green)]" title="Loss prevented by executing this action">save ${fmtUSD(save)}</span>` : ""}
+            ${ratio !== "—" ? `<span class="chip ${parseFloat(ratio) >= 3 ? "chip-good" : "chip-model"}" title="Loss avoided ÷ cost. >3× = profitable play. <1× = action costs more than it saves.">ROI ${ratio}</span>` : ""}
+          </div>
+        </div>
+        <div class="text-xs text-[var(--fg-1)] mt-2">${a.reason || ""}</div>
+        ${explainer ? `<div class="why-it-matters"><strong style="color:var(--green)">Why it works:</strong> ${explainer}</div>` : ""}`;
+      box.appendChild(div);
+    });
+  }
+
+  function renderCaveats(items) {
+    const ul = $("#caveats"); ul.innerHTML = "";
+    items.forEach(t => {
+      const li = document.createElement("li");
+      li.className = "flex gap-2";
+      li.innerHTML = `<span class="text-[var(--zinc)]">▸</span><span>${t}</span>`;
+      ul.appendChild(li);
+    });
+  }
+
+  // ---------- sector tables ----------
+  function scoreToColor(s) {
+    if (s >= 0.7) return "var(--red)";
+    if (s >= 0.5) return "var(--amber)";
+    if (s >= 0.3) return "var(--cyan)";
+    return "var(--green)";
+  }
+
+  function renderIndia(rows) {
+    const tb = $("#india-tbody"); tb.innerHTML = "";
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="mono">${r.rank}</td>
+        <td>
+          <div class="font-medium">${r.display_name}</div>
+          <div class="text-xs text-[var(--fg-2)]">${r.feedstock_chain}</div>
+        </td>
+        <td>
+          <div class="flex items-center gap-2">
+            <span class="mono font-semibold" style="color:${scoreToColor(r.score)}">${fmt(r.score,3)}</span>
+            <div class="bar-track w-20"><div class="bar-fill" style="width:${r.score*100}%;background:${scoreToColor(r.score)}"></div></div>
+          </div>
+        </td>
+        <td class="text-xs">${r.dominant_driver.replace(/_/g," ")}</td>
+        <td class="mono">${r.projected_first_symptom_day}</td>
+        <td class="mono">${fmtINR(r.impact_inr_cr_30d_point)}</td>`;
+      tr.title = r.first_symptom + "\n\nSource: " + r.citation.agency + " · " + r.citation.url;
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderGulf(rows) {
+    const tb = $("#gulf-tbody"); tb.innerHTML = "";
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      const bypass = r.bypass_available ?
+        `<span class="chip chip-good">${(r.bypass_share*100).toFixed(0)}%</span>` :
+        `<span class="chip chip-crit">none</span>`;
+      tr.innerHTML = `
+        <td class="mono">${r.rank}</td>
+        <td>
+          <div class="font-medium">${r.display_name}</div>
+          <div class="text-xs text-[var(--fg-2)]">${r.feedstock_chain}</div>
+        </td>
+        <td>
+          <div class="flex items-center gap-2">
+            <span class="mono font-semibold" style="color:${scoreToColor(r.score)}">${fmt(r.score,3)}</span>
+            <div class="bar-track w-20"><div class="bar-fill" style="width:${r.score*100}%;background:${scoreToColor(r.score)}"></div></div>
+          </div>
+        </td>
+        <td>${bypass}</td>
+        <td class="mono">${r.projected_first_symptom_day}</td>
+        <td class="mono">$${(r.impact_usd_m_30d_point).toLocaleString()}M</td>`;
+      tr.title = r.first_symptom + "\n\nSource: " + r.citation.agency + " · " + r.citation.url;
+      tb.appendChild(tr);
+    });
+  }
+
+  // ---------- openrouter panel ----------
+  function renderOpenRouterPanel(op) {
+    const wrap = $("#openrouter-panel");
+    if (!op) { wrap.classList.add("hidden"); return; }
+    wrap.classList.remove("hidden");
+    const flag = $("#openrouter-flag");
+    flag.classList.remove("chip-scen","chip-live","chip-good","chip-crit","chip-model");
+    if (op.error) {
+      flag.classList.add("chip-crit"); flag.textContent = "errored";
+      $("#or-consensus").textContent = "—";
+      $("#or-alpha").textContent = "—";
+      $("#or-meanconf").textContent = "—";
+      $("#or-panelsize").textContent = "—";
+      $("#or-judges").innerHTML = `<div class="text-sm text-[var(--red)]">${op.error}</div>`;
+      return;
+    }
+    flag.classList.add("chip-good");
+    flag.textContent = `${op.n_succeeded}/${op.panel_size} succeeded · ${op.elapsed_s}s`;
+    $("#or-consensus").textContent = op.consensus_risk || "—";
+    $("#or-consensus").style.color =
+      op.consensus_risk === "CRITICAL" ? "var(--red)" :
+      op.consensus_risk === "HIGH" ? "var(--red)" :
+      op.consensus_risk === "MEDIUM" ? "var(--amber)" : "var(--green)";
+    $("#or-alpha").textContent = (op.krippendorff_alpha_ordinal || 0).toFixed(3);
+    $("#or-meanconf").textContent = ((op.mean_confidence||0)*100).toFixed(1) + "%";
+    $("#or-panelsize").textContent = op.panel_size;
+
+    const box = $("#or-judges"); box.innerHTML = "";
+    (op.results || []).forEach(j => {
+      const div = document.createElement("div");
+      div.className = "p-3 rounded-lg border border-[var(--bd)] bg-[var(--bg-2)]";
+      const modelShort = (j.model || "").replace(":free","").replace("/","·");
+      if (!j.ok) {
+        div.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <div class="font-medium text-sm mono">${modelShort}</div>
+            <span class="chip chip-crit">FAIL</span>
+          </div>
+          <div class="text-xs text-[var(--fg-2)] mt-1">${(j.error||"").slice(0,160)}</div>`;
+      } else {
+        const lvl = j.risk_level || "—";
+        const lvlChip = lvl === "CRITICAL" || lvl === "HIGH" ? "chip-crit" :
+                        lvl === "MEDIUM" ? "chip-model" : "chip-good";
+        const sectors = (j.top_sectors || []).slice(0,3).join(" · ");
+        div.innerHTML = `
+          <div class="flex items-center justify-between gap-2">
+            <div class="font-medium text-sm mono">${modelShort}</div>
+            <div class="flex items-center gap-2">
+              <span class="chip ${lvlChip}">${lvl}</span>
+              <span class="mono text-xs text-[var(--cyan)]">conf ${fmt(j.confidence,2)}</span>
+              <span class="mono text-xs text-[var(--fg-2)]">${j.latency_s}s</span>
+            </div>
+          </div>
+          ${j.reason ? `<div class="text-xs text-[var(--fg-1)] mt-1">${j.reason}</div>` : ""}
+          ${sectors ? `<div class="text-[10px] text-[var(--fg-2)] mt-1 mono">top sectors: ${sectors}</div>` : ""}`;
+      }
+      box.appendChild(div);
+    });
+  }
+
+  // ---------- backtest panel ----------
+  async function runBacktest() {
+    const btn = $("#run-backtest");
+    btn.textContent = "running…"; btn.classList.remove("chip-live"); btn.classList.add("chip-model");
+    const sum = $("#backtest-summary");
+    sum.innerHTML = '<span class="mono text-[var(--cyan)]">running validation against 8 documented historical events…</span>';
+    try {
+      const r = await fetch("/demo/hormuz-war-room/validate", { method: "POST" });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const j = await r.json();
+      const agg = j.aggregate_accuracy || {};
+      sum.innerHTML = `
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+          <div><div class="text-[var(--fg-2)]">risk band</div><div class="mono text-[var(--green)] text-base">${(agg.risk_level_in_expected_band*100).toFixed(0)}%</div></div>
+          <div><div class="text-[var(--fg-2)]">brent ±30%</div><div class="mono text-[var(--cyan)] text-base">${typeof agg.brent_p90_brackets_documented_peak === "number" ? (agg.brent_p90_brackets_documented_peak*100).toFixed(0)+"%" : agg.brent_p90_brackets_documented_peak}</div></div>
+          <div><div class="text-[var(--fg-2)]">reroute action</div><div class="mono text-[var(--green)] text-base">${(agg.reroute_action_when_doc_reroute_ge_5d*100).toFixed(0)}%</div></div>
+          <div><div class="text-[var(--fg-2)]">india top-3 sane</div><div class="mono text-[var(--green)] text-base">${(agg.india_top3_includes_known_affected_sector*100).toFixed(0)}%</div></div>
+          <div><div class="text-[var(--fg-2)]">cf savings &gt; 0</div><div class="mono text-[var(--green)] text-base">${(agg.counterfactual_positive_savings*100).toFixed(0)}%</div></div>
+          <div><div class="text-[var(--fg-2)]">events tested</div><div class="mono text-base">${j.n_events_no_fatal}/${j.n_events_tested}</div></div>
+        </div>`;
+      const box = $("#backtest-rows"); box.innerHTML = "";
+      (j.per_event_results || []).forEach(row => {
+        if (row.fatal_error) return;
+        const passes = [row.risk_band_pass, row.brent_p90_pass, row.reroute_action_pass,
+                         row.india_top_makes_sense, row.counterfactual_pass];
+        const nPass = passes.filter(x => x === true).length;
+        const nTestable = passes.filter(x => x !== null && x !== undefined).length;
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between text-xs p-2 rounded border border-[var(--bd)] bg-[var(--bg-2)]";
+        const peakStr = row.brent_peak_documented != null ? `$${row.brent_peak_documented}` : "—";
+        const predStr = row.predicted_brent_p50 != null ? `$${row.predicted_brent_p50.toFixed(1)}` : "—";
+        div.innerHTML = `
+          <div class="mono text-[var(--fg-1)]">${row.event_id}</div>
+          <div class="flex items-center gap-3">
+            <span class="text-[var(--fg-2)]">sev ${row.severity_documented.toFixed(2)}</span>
+            <span class="text-[var(--fg-2)]">peak ${peakStr} → pred ${predStr}</span>
+            <span class="chip ${row.predicted_risk_level==="CRITICAL"?"chip-crit":row.predicted_risk_level==="HIGH"?"chip-crit":"chip-model"}">${row.predicted_risk_level}</span>
+            <span class="mono ${nPass===nTestable?"text-[var(--green)]":"text-[var(--amber)]"}">${nPass}/${nTestable}</span>
+          </div>`;
+        box.appendChild(div);
+      });
+    } catch (e) {
+      sum.innerHTML = `<span class="text-[var(--red)]">backtest failed: ${e.message}</span>`;
+    }
+    btn.textContent = "▶ run again"; btn.classList.add("chip-live"); btn.classList.remove("chip-model");
+  }
+
+  // ---------- scenario templates ----------
+  const SCENARIO_TEMPLATES = {
+    reliance_war: {
+      text: "Israel-Iran-USA war escalation closes the Strait of Hormuz. Reliance Industries faces simultaneous shock to Jamnagar refinery (1.4M bbl/d), petrochemical naphtha pricing, KG-D6 LNG benchmark realisation, Reliance Retail consumer cascade, Jio capex cycle, polyester paraxylene feed, RIIL pipelines, Reliance General Insurance marine claims, Reliance Power gas plants, and Network18 advertising. Quantify cascading damage across all 10 RIL subsidiaries.",
+      severity: 0.92, brent: 152, duration: 45,
+      enable_reliance: true, enable_openrouter: true,
+    },
+    hormuz_generic: {
+      text: "If Iran-Israel-US escalation restricts the Strait of Hormuz, what breaks first for India and the Gulf?",
+      severity: 0.85, brent: 132, duration: 21,
+      enable_reliance: false, enable_openrouter: false,
+    },
+    houthi_red_sea: {
+      text: "Houthi Red Sea campaign persists for an extended period. Vessel rerouting via Cape becomes structural. Container freight rates climb sustainably. Quantify cascading impact on Indian and Gulf supply chains.",
+      severity: 0.65, brent: 98, duration: 90,
+      enable_reliance: false, enable_openrouter: false,
+    },
+    iran_strait_threat: {
+      text: "Iran (without US/Israel involvement) threatens to mine the Strait of Hormuz. Insurance premiums spike but full closure has not occurred. Conditional partial reroute scenario.",
+      severity: 0.55, brent: 108, duration: 14,
+      enable_reliance: false, enable_openrouter: false,
+    },
+  };
+
+  function applyTemplate(name) {
+    const t = SCENARIO_TEMPLATES[name];
+    if (!t) return;
+    $("#scenario-text").value = t.text;
+    $("#severity").value = t.severity;
+    $("#brent").value = t.brent;
+    $("#duration").value = t.duration;
+    $("#enable-reliance").checked = !!t.enable_reliance;
+    $("#enable-openrouter").checked = !!t.enable_openrouter;
+    document.querySelectorAll(".scenario-btn").forEach(b =>
+      b.classList.toggle("active", b.dataset.template === name));
+  }
+
+  // ---------- reliance table render ----------
+  function renderReliance(block) {
+    const sec = $("#reliance-section");
+    if (!block) { sec.classList.add("hidden"); return; }
+    sec.classList.remove("hidden");
+    const agg = block.aggregate || {};
+    $("#ril-at-risk-point").textContent = "₹" + Number(agg.total_revenue_at_risk_inr_cr_30d_point || 0).toLocaleString() + " Cr";
+    const lo = Number(agg.total_revenue_at_risk_inr_cr_30d_low || 0).toLocaleString();
+    const hi = Number(agg.total_revenue_at_risk_inr_cr_30d_high || 0).toLocaleString();
+    $("#ril-at-risk-band").textContent = `₹${lo} – ₹${hi} Cr`;
+    $("#ril-pct-rev").textContent = (agg.pct_of_fy24_revenue_at_risk_30d_point || 0).toFixed(2) + "%";
+
+    const tb = $("#reliance-tbody"); tb.innerHTML = "";
+    (block.rows || []).forEach(r => {
+      const tr = document.createElement("tr");
+      tr.className = "ril-row";
+      const tooltip = `${r.feedstock_chain}\n\nFirst symptom: ${r.first_symptom}\n\nSource: ${r.citation.agency} (${r.citation.as_of})`;
+      tr.innerHTML = `
+        <td class="mono">${r.rank}</td>
+        <td>
+          <div class="font-medium" title="${escapeAttr(tooltip)}">${r.display_name}</div>
+          <div class="text-xs text-[var(--fg-2)]">${r.business_unit}</div>
+        </td>
+        <td>
+          <div class="flex items-center gap-2">
+            <span class="mono font-semibold" style="color:${scoreToColor(r.score)}">${fmt(r.score,3)}</span>
+            <div class="bar-track w-16"><div class="bar-fill" style="width:${r.score*100}%;background:${scoreToColor(r.score)}"></div></div>
+          </div>
+        </td>
+        <td class="mono">${(r.hormuz_dependency_share*100).toFixed(0)}%</td>
+        <td class="mono text-[var(--fg-2)]">${Number(r.fy24_revenue_inr_cr).toLocaleString()}</td>
+        <td class="mono">${r.projected_first_symptom_day}</td>
+        <td class="mono text-[var(--amber)]">${Number(r.impact_inr_cr_30d_point).toLocaleString()}</td>`;
+      tb.appendChild(tr);
+    });
+  }
+  function escapeAttr(s) { return String(s).replace(/"/g, "&quot;").replace(/\n/g, "&#10;"); }
+
+  // ---------- specialist panel render ----------
+  function renderSpecialistPanel(panel) {
+    const sec = $("#specialist-panel");
+    if (!panel || panel.error || !panel.verdicts) {
+      sec.classList.add("hidden");
+      return;
+    }
+    sec.classList.remove("hidden");
+    const flag = $("#spec-flag");
+    flag.textContent = `10 specialists · α=${(panel.aggregate.krippendorff_alpha_ordinal||0).toFixed(3)} · ${panel.aggregate.consensus_risk}`;
+    const box = $("#specialist-cards"); box.innerHTML = "";
+    panel.verdicts.forEach(v => {
+      const div = document.createElement("div");
+      const lvlChip = v.risk_level === "CRITICAL" ? "chip-crit" :
+                       v.risk_level === "HIGH" ? "chip-crit" :
+                       v.risk_level === "MEDIUM" ? "chip-model" : "chip-good";
+      div.className = "p-3 rounded-lg border border-[var(--bd)] bg-[var(--bg-2)]";
+      div.innerHTML = `
+        <div class="flex items-center justify-between gap-2 mb-1">
+          <div class="font-medium text-sm">${v.name}</div>
+          <div class="flex items-center gap-2">
+            <span class="chip ${lvlChip}">${v.risk_level}</span>
+            <span class="mono text-xs text-[var(--cyan)]">conf ${fmt(v.confidence,2)}</span>
+          </div>
+        </div>
+        <div class="text-xs text-[var(--fg-2)] mb-2 italic">${v.specialty}</div>
+        <div class="text-xs text-[var(--fg-1)] leading-relaxed">${v.rationale}</div>`;
+      box.appendChild(div);
+    });
+  }
+
+  // ---------- 25-judge meta panel render ----------
+  function renderJudgeMeta(meta) {
+    const sec = $("#judge-meta-panel");
+    if (!meta) { sec.classList.add("hidden"); return; }
+    sec.classList.remove("hidden");
+    const flag = $("#judge-meta-flag");
+    flag.classList.remove("chip-scen");
+    flag.classList.add("chip-live");
+    flag.textContent = `${meta.n_judges_total} judges across 3 tiers`;
+    $("#judge-meta-total").textContent = meta.n_judges_total;
+    const consensus = meta.meta_consensus_risk;
+    $("#judge-meta-consensus").textContent = consensus;
+    $("#judge-meta-consensus").style.color =
+      consensus === "CRITICAL" || consensus === "HIGH" ? "var(--red)" :
+      consensus === "MEDIUM" ? "var(--amber)" : "var(--green)";
+    $("#judge-meta-local").textContent = meta.by_source.local_ollama.consensus || "—";
+    $("#judge-meta-spec").textContent = meta.by_source.specialist_rule_based.consensus || "—";
+
+    const tierBox = $("#judge-meta-tiers"); tierBox.innerHTML = "";
+    [["local_ollama", "Local Ollama (3-judge)"],
+     ["openrouter_frontier", "Frontier OpenRouter"],
+     ["specialist_rule_based", "Sector specialists (10)"]].forEach(([key, label]) => {
+      const t = meta.by_source[key] || {};
+      const div = document.createElement("div");
+      div.className = "p-3 rounded-lg border border-[var(--bd)] bg-[var(--bg-2)]";
+      const consensus = t.consensus || "—";
+      const consensusChip = consensus === "CRITICAL" || consensus === "HIGH" ? "chip-crit" :
+                              consensus === "MEDIUM" ? "chip-model" :
+                              consensus === "LOW" ? "chip-good" : "chip-scen";
+      const alphaStr = t.krippendorff_alpha != null ? `α=${t.krippendorff_alpha.toFixed(3)}` : "";
+      div.innerHTML = `
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="font-medium text-sm">${label}</div>
+          <span class="chip ${consensusChip}">${consensus}</span>
+        </div>
+        <div class="text-xs text-[var(--fg-1)] mb-1">
+          <span class="mono text-[var(--cyan)]">${t.n_present || 0}</span> judges contributed
+          ${t.n_succeeded != null && t.n_panel_size ?
+            ` · <span class="mono">${t.n_succeeded}/${t.n_panel_size} succeeded</span>` : ""}
+        </div>
+        ${alphaStr ? `<div class="text-xs text-[var(--fg-2)] mono">${alphaStr} (Krippendorff inter-judge α)</div>` : ""}
+        ${t.skipped ? `<div class="text-xs text-[var(--fg-2)] italic">tier skipped</div>` : ""}`;
+      tierBox.appendChild(div);
+    });
+  }
+
+  // ---------- main run ----------
+  async function runWarRoom() {
+    const body = {
+      scenario_text: $("#scenario-text").value,
+      severity: parseFloat($("#severity").value),
+      brent_price_usd_bbl: parseFloat($("#brent").value),
+      duration_days: parseInt($("#duration").value, 10),
+      enable_llm_judges: true,
+      include_recent_signals: true,
+      enable_openrouter_panel: $("#enable-openrouter").checked,
+      expand_to_12_judges: $("#expand-12-judges").checked,
+      enable_specialist_judges: true,
+      scenario_focus: $("#enable-reliance").checked ? "reliance_full_supplychain" : "default",
+    };
+    resetStages();
+    ["signals","analogs","judges","sectors","cf","receipt"].forEach(s=>setStage(s,"run"));
+    $("#run-btn").disabled = true;
+    $("#run-btn").textContent = "running…";
+    const t0 = performance.now();
+    let resp;
+    try {
+      const r = await fetch("/demo/hormuz-war-room", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(body),
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}: ${(await r.text()).slice(0,200)}`);
+      resp = await r.json();
+    } catch (e) {
+      alert("war-room request failed:\n" + e.message);
+      $("#run-btn").disabled = false;
+      $("#run-btn").textContent = "▶ Run war room";
+      resetStages();
+      return;
+    }
+    LAST_RECEIPT = resp;
+    const elapsed = ((performance.now() - t0) / 1000).toFixed(2);
+    $("#elapsed").textContent = elapsed;
+
+    // Stage flags
+    setStage("signals", "done");
+    setStage("analogs", "done");
+    setStage("judges",  "done");
+    setStage("sectors", "done");
+    setStage("cf",      "done");
+    setStage("receipt", "done");
+
+    // Headline
+    $("#headline").classList.remove("hidden");
+    $("#risk-level").textContent = resp.live_pipeline.risk_level;
+    $("#risk-level").style.color = resp.live_pipeline.risk_level === "CRITICAL" ? "var(--red)" :
+                                    resp.live_pipeline.risk_level === "HIGH" ? "var(--red)" :
+                                    resp.live_pipeline.risk_level === "MEDIUM" ? "var(--amber)" : "var(--green)";
+    const flag = resp.data_source_flags.live_pipeline;
+    $("#risk-source").textContent = flag.replace(/_/g, " ");
+    const conf = resp.confidence.composite;
+    $("#conf-pct").textContent = (conf*100).toFixed(1) + "%";
+    $("#conf-bar").style.width = (conf*100).toFixed(1) + "%";
+    const proj = resp.live_pipeline.projection || {};
+    if (proj.brent_projection_usd_bbl_p50) {
+      $("#brent-p50").textContent = "$" + Number(proj.brent_projection_usd_bbl_p50).toFixed(1);
+      const lo = proj.brent_projection_usd_bbl_p10, hi = proj.brent_projection_usd_bbl_p90;
+      if (lo && hi) $("#brent-band").textContent = `p10-p90 [$${lo.toFixed(1)}, $${hi.toFixed(1)}]`;
+    }
+    const cf = resp.live_pipeline.counterfactual || {};
+    if (cf.savings_usd != null) {
+      $("#cf-saved").textContent = fmtUSD(cf.savings_usd);
+      $("#cf-pct").textContent = `${cf.savings_pct}% vs no-action P50 ${fmtUSD(cf.no_action_p50_loss_usd)}`;
+    }
+
+    renderMap(resp.chokepoint_graph);
+    renderHeadlineFacts(resp.live_facts_chokepoint);
+    renderAnalogs(resp.live_pipeline.analogs, resp.live_pipeline.signals_used_count);
+    renderJudges(resp.live_pipeline.judges);
+    renderOpenRouterPanel(resp.openrouter_panel);
+    renderSpecialistPanel(resp.specialist_panel);
+    renderJudgeMeta(resp.judge_meta);
+    renderIndia(resp.india_impact_table);
+    renderGulf(resp.gulf_impact_table);
+    renderReliance(resp.reliance_impact);
+    renderActions(resp.live_pipeline.recommended_actions);
+    renderCaveats(resp.uncertainty_caveats);
+
+    $("#run-btn").disabled = false;
+    $("#run-btn").textContent = "▶ Run war room";
+  }
+
+  // ---------- receipt drawer (tabbed) ----------
+  function openDrawer() {
+    if (!LAST_RECEIPT) { alert("Run the war room first."); return; }
+    const r = LAST_RECEIPT;
+    const blob = JSON.stringify(r, null, 2);
+    $("#drawer-sha").textContent = r.receipt_sha256 || "—";
+
+    // OVERVIEW pane
+    const lp = r.live_pipeline || {};
+    const proj = lp.projection || {};
+    const cf = lp.counterfactual || {};
+    $("#pane-overview-body").innerHTML = `
+      <div class="row"><strong>Risk level:</strong> ${lp.risk_level || "—"}</div>
+      <div class="row"><strong>Composite confidence:</strong> ${((r.confidence?.composite || 0)*100).toFixed(1)}% — formula: ${r.confidence?.formula || ""}</div>
+      <div class="row"><strong>Brent P50:</strong> $${proj.brent_projection_usd_bbl_p50?.toFixed(1) || "—"} (p10–p90: $${proj.brent_projection_usd_bbl_p10?.toFixed(1)||"—"} – $${proj.brent_projection_usd_bbl_p90?.toFixed(1)||"—"})</div>
+      <div class="row"><strong>P50 loss saving (with plan):</strong> ${cf.savings_usd != null ? fmtUSD(cf.savings_usd) : "—"} (${cf.savings_pct||0}% vs no-action)</div>
+      <div class="row"><strong>Wall-clock:</strong> ${r.elapsed_s || "—"}s</div>
+      <div class="row"><strong>Receipt sha256:</strong> <span class="mono break-all">${r.receipt_sha256 || "—"}</span></div>
+    `;
+
+    // INPUTS pane
+    const inp = r.scenario_input || {};
+    $("#pane-inputs-body").innerHTML = Object.entries(inp).map(([k,v]) =>
+      `<div class="row"><strong>${k}:</strong> ${typeof v === "string" && v.length > 200 ? v.slice(0,200)+"…" : JSON.stringify(v)}</div>`
+    ).join("");
+
+    // SIGNALS pane
+    const analogs = lp.analogs || [];
+    const sigUsed = lp.signals_used_count || 0;
+    $("#tab-badge-signals").textContent = analogs.length;
+    $("#pane-signals-body").innerHTML =
+      `<div class="row"><strong>Live signals last 24h:</strong> ${sigUsed}</div>` +
+      analogs.map(a => `
+        <div class="row">
+          <strong>${a.name}</strong> · sim ${(a.similarity||0).toFixed(3)} · ${a.date}
+          <div class="text-[var(--fg-2)] mt-1">${a.summary || ""}</div>
+        </div>`).join("");
+
+    // JUDGES pane (combine all 3 tiers)
+    const localJ = lp.judges || [];
+    const orJ = (r.openrouter_panel?.results) || [];
+    const specJ = (r.specialist_panel?.verdicts) || [];
+    const totalJudges = localJ.length + orJ.length + specJ.length;
+    $("#tab-badge-judges").textContent = totalJudges;
+    let judgesHtml = `<div class="row"><strong>Total judges:</strong> ${totalJudges} · meta consensus: ${r.judge_meta?.meta_consensus_risk || "—"}</div>`;
+    if (localJ.length) {
+      judgesHtml += '<div class="mt-3 mb-2 text-[var(--cyan)] font-semibold uppercase text-[10px] tracking-wider">Local Ollama (' + localJ.length + ')</div>';
+      judgesHtml += localJ.map(j => `<div class="row"><strong>${j.name}:</strong> ${j.risk_level} · conf ${j.confidence?.toFixed(2)} — ${j.rationale || ""}</div>`).join("");
+    }
+    if (orJ.length) {
+      judgesHtml += '<div class="mt-3 mb-2 text-[var(--cyan)] font-semibold uppercase text-[10px] tracking-wider">OpenRouter Frontier (' + orJ.length + ')</div>';
+      judgesHtml += orJ.map(j => `<div class="row"><strong class="mono">${(j.model||"").replace(":free","")}:</strong> ${j.risk_level || "FAIL"} · conf ${j.confidence?.toFixed(2)||"—"} — ${j.reason || j.error || ""}</div>`).join("");
+    }
+    if (specJ.length) {
+      judgesHtml += '<div class="mt-3 mb-2 text-[var(--cyan)] font-semibold uppercase text-[10px] tracking-wider">Specialists (' + specJ.length + ')</div>';
+      judgesHtml += specJ.map(j => `<div class="row"><strong>${j.name}:</strong> ${j.risk_level} · conf ${j.confidence?.toFixed(2)} — ${j.rationale}</div>`).join("");
+    }
+    $("#pane-judges-body").innerHTML = judgesHtml;
+
+    // SECTORS pane
+    const india = r.india_impact_table || [];
+    const gulf = r.gulf_impact_table || [];
+    const ril = r.reliance_impact;
+    let secHtml = "";
+    if (india.length) {
+      secHtml += '<div class="text-[var(--cyan)] font-semibold uppercase text-[10px] tracking-wider mb-2">India ('+ india.length +')</div>';
+      secHtml += india.slice(0,5).map(s => `<div class="row">#${s.rank} <strong>${s.display_name}</strong> · score ${s.score} · ₹${(s.impact_inr_cr_30d_point||0).toLocaleString()} Cr</div>`).join("");
+    }
+    if (gulf.length) {
+      secHtml += '<div class="text-[var(--cyan)] font-semibold uppercase text-[10px] tracking-wider mt-3 mb-2">Gulf ('+ gulf.length +')</div>';
+      secHtml += gulf.slice(0,5).map(s => `<div class="row">#${s.rank} <strong>${s.display_name}</strong> · score ${s.score} · $${(s.impact_usd_m_30d_point||0).toLocaleString()}M</div>`).join("");
+    }
+    if (ril) {
+      secHtml += '<div class="text-[var(--violet)] font-semibold uppercase text-[10px] tracking-wider mt-3 mb-2">Reliance Industries ('+ (ril.rows?.length||0) +' subsidiaries)</div>';
+      secHtml += `<div class="row"><strong>Aggregate at-risk:</strong> ₹${(ril.aggregate?.total_revenue_at_risk_inr_cr_30d_point||0).toLocaleString()} Cr · ${(ril.aggregate?.pct_of_fy24_revenue_at_risk_30d_point||0).toFixed(2)}% of FY24</div>`;
+      secHtml += (ril.rows||[]).slice(0,3).map(s => `<div class="row">#${s.rank} <strong>${s.display_name}</strong> · ₹${(s.impact_inr_cr_30d_point||0).toLocaleString()} Cr</div>`).join("");
+    }
+    $("#pane-sectors-body").innerHTML = secHtml;
+
+    // ACTIONS pane
+    const acts = lp.recommended_actions || [];
+    $("#tab-badge-actions").textContent = acts.length;
+    $("#pane-actions-body").innerHTML = acts.map((a,i) => `
+      <div class="row">
+        <strong>${String(i+1).padStart(2,"0")} · ${a.action_type}${a.target ? " · "+a.target : ""}</strong>
+        ${a.estimated_cost_usd != null ? `<br>cost: <span class="text-[var(--amber)]">${fmtUSD(a.estimated_cost_usd)}</span>` : ""}
+        ${a.estimated_loss_avoided_usd != null ? ` · save: <span class="text-[var(--green)]">${fmtUSD(a.estimated_loss_avoided_usd)}</span>` : ""}
+        <div class="text-[var(--fg-2)] mt-1">${a.reason || ""}</div>
+      </div>`).join("");
+
+    // RAW pane
+    $("#pane-raw-body").textContent = blob;
+
+    const dl = $("#dl-btn");
+    dl.href = "data:application/json;charset=utf-8," + encodeURIComponent(blob);
+    $("#drawer").classList.remove("translate-x-full");
+  }
+  function closeDrawer() { $("#drawer").classList.add("translate-x-full"); }
+  function escapeHtml(s) {
+    return s.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  }
+  // tab-switch
+  document.querySelectorAll(".drawer-tab").forEach(t => {
+    t.addEventListener("click", () => {
+      document.querySelectorAll(".drawer-tab").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".drawer-pane").forEach(p => p.classList.remove("active"));
+      t.classList.add("active");
+      document.getElementById("pane-" + t.dataset.pane).classList.add("active");
+    });
+  });
+
+  // ---------- bind ----------
+  $("#run-btn").addEventListener("click", runWarRoom);
+  $("#receipt-btn").addEventListener("click", openDrawer);
+  $("#drawer-close").addEventListener("click", closeDrawer);
+  $("#run-backtest").addEventListener("click", runBacktest);
+  document.querySelectorAll(".scenario-btn").forEach(btn => {
+    btn.addEventListener("click", () => applyTemplate(btn.dataset.template));
+  });
+  $("#copy-btn").addEventListener("click", () => {
+    if (!LAST_RECEIPT) return;
+    navigator.clipboard.writeText(JSON.stringify(LAST_RECEIPT, null, 2));
+    $("#copy-btn").textContent = "copied ✓";
+    setTimeout(()=>$("#copy-btn").textContent = "copy json", 1200);
+  });
+
+  // ---------- pre-render the static IEA map on load ----------
+  fetch("/demo/hormuz-war-room/health").then(r=>r.json()).then(()=>{
+    // light initial map render to give a feel before run
+    fetch("/demo/hormuz-war-room", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ scenario_text: "preload",
+                              severity: 0.5, brent_price_usd_bbl: 90,
+                              duration_days: 7,
+                              enable_llm_judges: false,
+                              include_recent_signals: false })
+    }).then(r=>r.json()).then(j => {
+      renderMap(j.chokepoint_graph);
+      renderHeadlineFacts(j.live_facts_chokepoint);
+    }).catch(()=>{});
+  }).catch(()=>{});
+</script>
+</body>
+</html>

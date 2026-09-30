@@ -1,0 +1,19 @@
+{
+  "conversion_date": "2025-10-15T12:27:11.767836",
+  "converted_files": [
+    "ridge_weights.json",
+    "neural_weights.json",
+    "poly_features.json"
+  ],
+  "format_version": "1.0",
+  "security_compliance": "HuggingFace approved",
+  "reference": "https://huggingface.co/docs/hub/security-pickle",
+  "original_format": "scikit-learn pickle (.pkl)",
+  "new_format": "JSON (.json)",
+  "benefits": [
+    "No pickle security warnings",
+    "Human-readable weights",
+    "Cross-platform compatible",
+    "No arbitrary code execution risk"
+  ]
+}

@@ -1,0 +1,60 @@
+# ==============================================================================
+# WorkForcePowerHouseSAP Root .gitignore
+# ==============================================================================
+
+# Large ML model weight files (exceeding GitHub 100MB limit)
+*.safetensors
+*.onnx
+*.bin
+*.pt
+*.pth
+*.gguf
+*.h5
+*.ckpt
+checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Node.js dependencies & builds
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Databases & local state
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.sqlite-journal
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
+.system_generated/

@@ -1,0 +1,80 @@
+﻿export const applicationsStats = {
+  total: 12,
+  submitted: 3,
+  underReview: 4,
+  approved: 3,
+  pending: 2,
+};
+
+export const initialApplicationsList = [
+  {
+    id: 'APP-2024-001',
+    department: 'Factories Department',
+    application: 'Factory License Renewal',
+    status: 'Under Review',
+    submissionDate: '02 May 2024',
+    updatedOn: '20 May 2024',
+    referenceNo: 'FAC/IND/2024/9912',
+    currentStage: 'Under Review',
+    stages: ['Draft', 'Submitted', 'Under Review', 'Additional Documents', 'Approved'],
+    feePaid: '₹18,500',
+    contactOfficer: 'J. K. Patil (Joint Director)',
+    notes: 'Site inspection conducted on 18 May. Final clearance note prepared.'
+  },
+  {
+    id: 'APP-2024-002',
+    department: 'Pollution Control Board',
+    application: 'Pollution NOC (Consent to Operate)',
+    status: 'Approved',
+    submissionDate: '10 Apr 2024',
+    updatedOn: '18 May 2024',
+    referenceNo: 'PCB/NOC/CTE-8819',
+    currentStage: 'Approved',
+    stages: ['Draft', 'Submitted', 'Under Review', 'Additional Documents', 'Approved'],
+    feePaid: '₹35,000',
+    contactOfficer: 'Dr. V. Deshmukh',
+    notes: 'Full emission compliance certified. Valid for 3 financial years.'
+  },
+  {
+    id: 'APP-2024-003',
+    department: 'Fire Department',
+    application: 'Fire Safety Certificate Renewal',
+    status: 'Pending',
+    submissionDate: '08 May 2024',
+    updatedOn: '15 May 2024',
+    referenceNo: 'FIRE/NOC/REV-3104',
+    currentStage: 'Submitted',
+    stages: ['Draft', 'Submitted', 'Under Review', 'Additional Documents', 'Approved'],
+    feePaid: '₹12,000',
+    contactOfficer: 'Chief Fire Inspector',
+    notes: 'Awaiting scheduled onsite fire marshal inspection.'
+  },
+  {
+    id: 'APP-2024-004',
+    department: 'Labour Department',
+    application: 'Labour Establishment Registration (Form C)',
+    status: 'In Progress',
+    submissionDate: '25 Apr 2024',
+    updatedOn: '12 May 2024',
+    referenceNo: 'LAB/REG/CL-5421',
+    currentStage: 'Additional Documents',
+    stages: ['Draft', 'Submitted', 'Under Review', 'Additional Documents', 'Approved'],
+    feePaid: '₹8,400',
+    contactOfficer: 'Regional Labour Commissioner',
+    notes: 'Supplementary contractor staff indemnity declarations requested.'
+  },
+  {
+    id: 'APP-2024-005',
+    department: 'State Electricity Board',
+    application: 'HT Industrial Feeder 500kVA Sanction',
+    status: 'Submitted',
+    submissionDate: '14 May 2024',
+    updatedOn: '19 May 2024',
+    referenceNo: 'MSEDCL/IND/HT-1049',
+    currentStage: 'Submitted',
+    stages: ['Draft', 'Submitted', 'Under Review', 'Additional Documents', 'Approved'],
+    feePaid: '₹45,000',
+    contactOfficer: 'Executive Engineer (Sub-Station)',
+    notes: 'Feeder load simulation under process.'
+  },
+];

@@ -1,0 +1,13 @@
+# Install Ollama (runs LLM locally on your machine)
+# Go to https://ollama.com and download for your OS
+# Then pull a small model:
+ollama pull llama3.2
+
+# Create project folder
+mkdir supply_chain_agent && cd supply_chain_agent
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install packages
+pip install langchain langchain-ollama langgraph pandas
